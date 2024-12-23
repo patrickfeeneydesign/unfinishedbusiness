@@ -3,44 +3,185 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Upload - Progress Report</title>
+  <title>Unfinished Business - Upload</title>
+  <style>
+    /* Reset default margin/padding */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* Body Setup */
+    body {
+      background-color: rgb(237, 237, 237);
+      font-family: sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+
+    header {
+    height: 15vh;
+}
+
+    /* Title Section */
+   header  h1 {
+      height: 10vh;
+      font-weight: 500;
+      line-height: 10vh; /* Ensures text is vertically centered */
+      font-size: 10vh;   /* Requested text size */
+      color: black;
+      margin: 0;         /* Remove default margin */
+      font-family: sans-serif;
+    }
+
+    /* Link styling */
+    header a {
+      color: black;
+      position: absolute;
+      text-decoration: none;
+      font-size: 1rem;
+      padding: 0.8rem;
+      transition: background-color 0.3s;
+    }
+
+    a:hover {
+      background-color: rgba(255,255,255,0.3);
+    }
+
+    header a:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Main content container */
+    main {
+      flex: 1; /* Grow to fill vertical space, if needed */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+
+    /* Heading above form */
+    main h2 {
+      font-weight: 500;
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    /* Form Container */
+    #uploadForm {
+      background-color: #000000;
+      color: #ccc;
+      padding: 4rem;
+      width: 100%;
+      max-width: 600px;
+      margin-top: 2rem;
+    }
+
+    #uploadForm label {
+      font-weight: 600;
+      display: inline-block;
+      margin-bottom: 0.5rem;
+    }
+
+    #uploadForm input[type="text"],
+    #uploadForm textarea,
+    #uploadForm input[type="file"] {
+      width: 100%;
+      padding: 0.7rem;
+      margin-bottom: 1rem;
+      background-color: rgb(237, 237, 237);
+      border: 1px solid #ccc;
+      font-family: inherit;
+      font-size: 1rem;
+    }
+
+    #uploadForm button[type="submit"] {
+      cursor: pointer;
+      display: inline-block;
+      background-color: rgb(95, 197, 223);
+      color: black;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      font-size: 1rem;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+
+    #uploadForm button[type="submit"]:hover {
+      background-color: rgb(70, 150, 180);
+    }
+
+    /* Status Message */
+    #statusMessage {
+      margin-top: 1rem;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    /* Footer (optional if you want a similar look) */
+    footer {
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.9rem;
+      color: #555;
+    }
+  </style>
 </head>
 <body>
-  <h1>Submit Your Project</h1>
-  <a href="index.html">Home</a>
+  <!-- Header section mimicking index.html -->
+  <header>  
+    <h1>Unfinished Business</h1>
+    <a href="index.html">Home</a>
+  </header>
 
-  <form id="uploadForm">
-    <div>
-      <label for="title">Project Title</label><br />
-      <input type="text" id="title" name="title" required />
-    </div>
+  <!-- Main area for form content -->
+  <main>
 
-    <div>
-      <label for="description">Description</label><br />
-      <textarea id="description" name="description" rows="4" required></textarea>
-    </div>
+    <form id="uploadForm">
+        <h2>Submit Your Project</h2>
 
-    <div>
-      <label for="tags">Tags (comma-separated)</label><br />
-      <input type="text" id="tags" name="tags" placeholder="e.g. art, WIP, concept" />
-    </div>
+      <div>
+        <label for="title">Project Title</label><br />
+        <input type="text" id="title" name="title" required />
+      </div>
 
-    <!-- OPTIONAL file upload section -->
-    <div>
-      <label for="file">Optional Image Upload</label><br />
-      <input type="file" id="file" name="file" accept="image/*" />
-    </div>
+      <div>
+        <label for="description">Description</label><br />
+        <textarea id="description" name="description" rows="4" required></textarea>
+      </div>
 
-    <button type="submit">Submit</button>
-  </form>
+      <div>
+        <label for="tags">Tags (comma-separated)</label><br />
+        <input type="text" id="tags" name="tags" placeholder="e.g. art, WIP, concept" />
+      </div>
 
-  <p id="statusMessage"></p>
+      <!-- OPTIONAL file upload section -->
+      <div>
+        <label for="file">Optional Image Upload</label><br />
+        <input type="file" id="file" name="file" accept="image/*" />
+      </div>
 
-  <!-- Include the Supabase client via CDN -->
+      <button type="submit">Submit</button>
+    </form>
+
+    <p id="statusMessage"></p>
+  </main>
+
+  <!-- Optional footer -->
+  <footer>
+    <p>&copy; 2024 Unfinished Business</p>
+  </footer>
+
+  <!-- Include the Supabase client via CDN (unchanged) -->
   <script type="module">
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-    // Replace these values with your actual Supabase details
+    // Replace with your actual Supabase details:
     const SUPABASE_URL = "https://dxvznqxwdbrcyyoadbgb.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR4dnpucXh3ZGJyY3l5b2FkYmdiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQ5NjUzMzIsImV4cCI6MjA1MDU0MTMzMn0.FbSmgJ5KOGaSIY4150gOIbiYWQ86fbtZQk-fP50RkZk";
 
@@ -49,7 +190,7 @@
     const uploadForm = document.getElementById("uploadForm");
     const statusMessage = document.getElementById("statusMessage");
 
-    // Set a max file size (in bytes). Here, 2 MB = 2 * 1024 * 1024.
+    // Set a max file size (in bytes). 2 MB here.
     const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2 MB
 
     uploadForm.addEventListener("submit", async (e) => {
@@ -67,12 +208,11 @@
 
       let base64Image = null;
 
-      // If a file is selected, convert it to Base64 after checking the size
+      // If a file is selected, convert it to Base64 (after checking the size)
       if (fileInput) {
-        // 1. Check file size
         if (fileInput.size > MAX_FILE_SIZE) {
           statusMessage.textContent = `File is too large! Max allowed is 2MB.`;
-          return; // Stop submission
+          return;
         }
 
         try {
@@ -85,15 +225,15 @@
       }
 
       try {
-        // Insert metadata into the 'projects' table, including Base64 image (if present)
+        // Insert into 'projects' table
         const { data: newRecord, error: dbError } = await supabase
           .from("projects")
           .insert([
             {
               title: title,
               description: description,
-              tags: tags,         // text[] column
-              image_data: base64Image, // text column for Base64
+              tags: tags,
+              image_data: base64Image,
             },
           ]);
 
@@ -116,7 +256,7 @@
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = (event) => {
-          resolve(event.target.result); // This is the dataURL (e.g. 'data:image/png;base64,...')
+          resolve(event.target.result); // dataURL (e.g. 'data:image/png;base64,...')
         };
         reader.onerror = (error) => reject(error);
         reader.readAsDataURL(file);
