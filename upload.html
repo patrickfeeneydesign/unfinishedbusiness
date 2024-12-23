@@ -40,13 +40,17 @@
   <script type="module">
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
+    // Replace these values with your actual Supabase details
     const SUPABASE_URL = "https://dxvznqxwdbrcyyoadbgb.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR4dnpucXh3ZGJyY3l5b2FkYmdiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQ5NjUzMzIsImV4cCI6MjA1MDU0MTMzMn0.FbSmgJ5KOGaSIY4150gOIbiYWQ86fbtZQk-fP50RkZk"; // Replace with your new key
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR4dnpucXh3ZGJyY3l5b2FkYmdiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQ5NjUzMzIsImV4cCI6MjA1MDU0MTMzMn0.FbSmgJ5KOGaSIY4150gOIbiYWQ86fbtZQk-fP50RkZk";
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const uploadForm = document.getElementById("uploadForm");
     const statusMessage = document.getElementById("statusMessage");
+
+    // Set a max file size (in bytes). Here, 2 MB = 2 * 1024 * 1024.
+    const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2 MB
 
     uploadForm.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -61,50 +65,35 @@
       // Convert tags to array of strings
       const tags = tagsInput ? tagsInput.split(",").map((tag) => tag.trim()) : [];
 
-      // Initialize image URL to null
-      let imageUrl = null;
+      let base64Image = null;
 
-      // If a file is selected, attempt an upload
+      // If a file is selected, convert it to Base64 after checking the size
       if (fileInput) {
+        // 1. Check file size
+        if (fileInput.size > MAX_FILE_SIZE) {
+          statusMessage.textContent = `File is too large! Max allowed is 2MB.`;
+          return; // Stop submission
+        }
+
         try {
-          const uniqueFileName = `${Date.now()}_${fileInput.name}`;
-
-          // Upload the file to your "uploads" bucket (make sure it exists in your Supabase project)
-          const { data: fileData, error: uploadError } = await supabase.storage
-            .from("uploads")
-            .upload(uniqueFileName, fileInput);
-
-          if (uploadError) {
-            throw uploadError;
-          }
-
-          // Retrieve a public URL for the uploaded file
-          const { data: publicUrlData, error: publicUrlError } = supabase.storage
-            .from("uploads")
-            .getPublicUrl(fileData.path);
-
-          if (publicUrlError) {
-            throw publicUrlError;
-          }
-
-          imageUrl = publicUrlData.publicUrl;
+          base64Image = await fileToBase64(fileInput);
         } catch (err) {
-          console.error("Image upload failed:", err.message);
-          statusMessage.textContent = `Image upload failed: ${err.message}`;
-          return; // Stop form submission if the image fails
+          console.error("Error converting file to Base64:", err);
+          statusMessage.textContent = `Error reading image file: ${err.message}`;
+          return;
         }
       }
 
       try {
-        // Insert metadata (and image URL if available) into the 'projects' table
+        // Insert metadata into the 'projects' table, including Base64 image (if present)
         const { data: newRecord, error: dbError } = await supabase
           .from("projects")
           .insert([
             {
               title: title,
               description: description,
-              tags: tags,  // Stored as a text[] column
-              image_url: imageUrl, // Will be null if no image was uploaded
+              tags: tags,         // text[] column
+              image_data: base64Image, // text column for Base64
             },
           ]);
 
@@ -119,6 +108,20 @@
         statusMessage.textContent = `Submission failed: ${error.message}`;
       }
     });
+
+    /**
+     * Helper function: read file as Base64 string
+     */
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          resolve(event.target.result); // This is the dataURL (e.g. 'data:image/png;base64,...')
+        };
+        reader.onerror = (error) => reject(error);
+        reader.readAsDataURL(file);
+      });
+    }
   </script>
 </body>
 </html>

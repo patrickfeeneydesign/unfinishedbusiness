@@ -14,17 +14,18 @@
   <script type="module">
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-    // Replace these placeholders with your actual values:
+    // Replace with your actual Supabase details:
     const SUPABASE_URL = "https://dxvznqxwdbrcyyoadbgb.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR4dnpucXh3ZGJyY3l5b2FkYmdiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQ5NjUzMzIsImV4cCI6MjA1MDU0MTMzMn0.FbSmgJ5KOGaSIY4150gOIbiYWQ86fbtZQk-fP50RkZk"; // Replace with your new key
+    const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     async function fetchProjects() {
       try {
+        // Include the 'image_data' column in your SELECT
         const { data: projects, error } = await supabase
           .from("projects")
-          .select("id, title, description")
+          .select("id, title, description, image_data")
           .order("id", { ascending: false });
 
         if (error) {
@@ -37,13 +38,21 @@
           return;
         }
 
-        // Create a list of projects
+        // Construct HTML
         const html = projects
           .map((project) => {
+            // If there's Base64 image data, display it
+            let imageTag = "";
+            if (project.image_data) {
+              // Because it's a data URL, we can just use it as the src
+              imageTag = `<img src="${project.image_data}" alt="Project Image" style="max-width: 300px; display: block;" />`;
+            }
+
             return `
               <div style="margin-bottom: 1rem;">
                 <h2>${project.title}</h2>
                 <p>${project.description}</p>
+                ${imageTag}
               </div>
             `;
           })
@@ -56,7 +65,7 @@
       }
     }
 
-    // Fetch the projects as soon as the page loads
+    // Fetch the projects on page load
     fetchProjects();
   </script>
 </body>
