@@ -6,7 +6,7 @@
   <title>Upload - Progress Report</title>
 </head>
 <body>
-  <h1>Upload Your Project</h1>
+  <h1>Submit Your Project</h1>
   <form id="uploadForm">
     <div>
       <label for="title">Project Title</label><br />
@@ -23,10 +23,7 @@
       <input type="text" id="tags" name="tags" placeholder="e.g. art, WIP, concept" />
     </div>
 
-    <div>
-      <label for="file">File Upload</label><br />
-      <input type="file" id="file" name="file" required />
-    </div>
+    <!-- Removed the file upload section -->
 
     <button type="submit">Submit</button>
   </form>
@@ -47,56 +44,25 @@
 
     uploadForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      statusMessage.textContent = "Uploading...";
+      statusMessage.textContent = "Submitting...";
 
       // Gather form data
       const title = document.getElementById("title").value.trim();
       const description = document.getElementById("description").value.trim();
       const tagsInput = document.getElementById("tags").value.trim();
-      const fileInput = document.getElementById("file").files[0];
-
-      if (!fileInput) {
-        statusMessage.textContent = "Please select a file.";
-        return;
-      }
 
       // Convert tags to array of strings
       const tags = tagsInput ? tagsInput.split(",").map((tag) => tag.trim()) : [];
 
       try {
-        // 1. Upload the file to Supabase Storage
-        const fileName = `${Date.now()}_${fileInput.name}`;
-        const { data: fileData, error: fileError } = await supabase.storage
-          .from("uploads")
-          .upload(fileName, fileInput, {
-            cacheControl: "3600",
-            upsert: false,
-          });
-
-        if (fileError) {
-          throw fileError;
-        }
-
-        // 2. Get the public URL of the uploaded file
-        const { data: publicUrlData, error: urlError } = supabase.storage
-          .from("uploads")
-          .getPublicUrl(fileData.path);
-
-        if (urlError) {
-          throw urlError;
-        }
-
-        const filePublicUrl = publicUrlData.publicUrl;
-
-        // 3. Insert metadata into the 'projects' table
+        // Insert metadata into the 'projects' table
         const { data: newRecord, error: dbError } = await supabase
           .from("projects")
           .insert([
             {
               title: title,
               description: description,
-              tags: tags,         // Stored as a text[] column
-              file_url: filePublicUrl,  // Full public URL
+              tags: tags, // Stored as a text[] column
             },
           ]);
 
@@ -104,11 +70,11 @@
           throw dbError;
         }
 
-        statusMessage.textContent = "Upload successful!";
+        statusMessage.textContent = "Submission successful!";
         uploadForm.reset();
       } catch (error) {
-        console.error("Upload error:", error);
-        statusMessage.textContent = `Upload failed: ${error.message}`;
+        console.error("Error:", error);
+        statusMessage.textContent = `Submission failed: ${error.message}`;
       }
     });
   </script>
