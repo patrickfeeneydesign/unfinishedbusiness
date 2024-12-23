@@ -5,87 +5,116 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Unfinished Business - Upload</title>
   <style>
-    /* Reset default margin/padding */
+    /* -------------------------------
+       1) FONT-FACE (FROM index.html)
+       ------------------------------- */
+    @font-face {
+      font-family: 'Louise-Regular';
+      src: url('fonts/VTF/otf/Louise-Regular.otf') format('otf'),
+           url('fonts/VTF/ttf/Louise-Regular.ttf') format('ttf'),
+           url('fonts/VTF/webfonts/Louise-Regular.woff') format('woff'),
+           url('fonts/VTF/webfonts/Louise-Regular.woff2') format('woff2');
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'Latitude-Regular';
+      src: url('fonts/VTF/otf/Latitude-Regular.otf') format('otf'),
+           url('fonts/VTF/ttf/Latitude-Regular.ttf') format('ttf'),
+           url('fonts/VTF/webfonts/Latitude-Regular.woff') format('woff'),
+           url('fonts/VTF/webfonts/Latitude-Regular.woff2') format('woff2');
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'Director-Regular';
+      src: url('fonts/VTF/otf/Director-Regular.otf') format('otf'),
+           url('fonts/VTF/ttf/Director-Regular.ttf') format('ttf'),
+           url('fonts/VTF/webfonts/Director-Regular.woff') format('woff'),
+           url('fonts/VTF/webfonts/Director-Regular.woff2') format('woff2');
+      font-style: normal;
+    }
+
+    /* -------------------------------
+       2) GLOBAL RESET & BASE STYLES
+       ------------------------------- */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
-
-    /* Body Setup */
     body {
-      background-color: rgb(237, 237, 237);
-      font-family: sans-serif;
+      font-family: sans-serif; /* fallback */
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      background-color: #121212; /* match index.html */
     }
 
-
-    header {
-    height: 15vh;
-}
-
-    /* Title Section */
-   header  h1 {
-      height: 10vh;
-      font-weight: 500;
-      line-height: 10vh; /* Ensures text is vertically centered */
-      font-size: 10vh;   /* Requested text size */
-      color: black;
-      margin: 0;         /* Remove default margin */
-      font-family: sans-serif;
+      /*******************************************
+     * HEADER
+     ********************************************/
+     header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 2vw;
+      border-bottom: 2px solid #ededed;
     }
-
-    /* Link styling */
+    header h1 {
+      font-size: 6rem;
+      padding-top: 1vw;
+      font-family: "Latitude-Regular";
+      color: #e6eeff;
+      user-select: none;
+    }
     header a {
-      color: black;
-      position: absolute;
       text-decoration: none;
-      font-size: 1rem;
-      padding: 0.8rem;
-      transition: background-color 0.3s;
+      padding: 0.8rem 1.2rem;
+      background: #e6eeff;
+      color: black;
+      transition: background-color 0.3s ease;
     }
-
-    a:hover {
-      background-color: rgba(255,255,255,0.3);
-    }
-
     header a:hover {
-      background-color: rgba(255, 255, 255, 0.3);
+      background: #555;
+      color: #e6eeff;
     }
-
-    /* Main content container */
+    /* ----------------------------------
+       4) MAIN CONTENT & FORM CONTAINER
+       ---------------------------------- */
     main {
-      flex: 1; /* Grow to fill vertical space, if needed */
+      flex: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
       padding: 2rem 1rem;
     }
 
-    /* Heading above form */
+    /* Heading above the form */
     main h2 {
-      font-weight: 500;
       font-size: 2rem;
+      font-weight: 500;
+      color: #D4DDED;
       margin-bottom: 1rem;
       text-align: center;
     }
 
-    /* Form Container */
+    /* The form itself */
     #uploadForm {
-      background-color: #000000;
+      background-color: #202020; 
       color: #ccc;
       padding: 4rem;
       width: 100%;
       max-width: 600px;
       margin-top: 2rem;
+      border: 1px solid #D4DDED; /* subtle border to match index.html theme */
     }
 
     #uploadForm label {
       font-weight: 600;
       display: inline-block;
       margin-bottom: 0.5rem;
+      color: #D4DDED;
     }
 
     #uploadForm input[type="text"],
@@ -94,16 +123,17 @@
       width: 100%;
       padding: 0.7rem;
       margin-bottom: 1rem;
-      background-color: rgb(237, 237, 237);
       border: 1px solid #ccc;
       font-family: inherit;
       font-size: 1rem;
+      background-color: #333; /* keep text fields dark */
+      color: #ededed;
     }
 
     #uploadForm button[type="submit"] {
       cursor: pointer;
       display: inline-block;
-      background-color: rgb(95, 197, 223);
+      background-color: #D4DDED;
       color: black;
       border: none;
       padding: 0.8rem 1.5rem;
@@ -111,39 +141,61 @@
       border-radius: 5px;
       transition: background-color 0.3s;
     }
-
     #uploadForm button[type="submit"]:hover {
-      background-color: rgb(70, 150, 180);
+      background-color: #555;
+      color: #ededed;
     }
 
-    /* Status Message */
+    /* ----------------------------------
+       5) STATUS MESSAGE
+       ---------------------------------- */
     #statusMessage {
       margin-top: 1rem;
       text-align: center;
       font-weight: bold;
+      color: #ededed;
     }
 
-    /* Footer (optional if you want a similar look) */
+    /* ----------------------------------
+       6) FOOTER
+       ---------------------------------- */
     footer {
       text-align: center;
       padding: 1rem;
       font-size: 0.9rem;
       color: #555;
     }
+
+    /* ----------------------------------
+       7) RESPONSIVE ADJUSTMENTS
+       ---------------------------------- */
+    @media (max-width: 600px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      header h1 {
+        font-size: 2.2rem;
+        margin-bottom: 1rem;
+      }
+      header a {
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+      }
+    }
   </style>
 </head>
 <body>
-  <!-- Header section mimicking index.html -->
-  <header>  
+  <!-- Header (same structure & functionality; new styles) -->
+  <header>
     <h1>Unfinished Business</h1>
     <a href="index.html">Home</a>
   </header>
 
   <!-- Main area for form content -->
   <main>
-
     <form id="uploadForm">
-        <h2>Submit Your Project</h2>
+      <h2>Submit Your Project</h2>
 
       <div>
         <label for="title">Project Title</label><br />
@@ -177,7 +229,7 @@
     <p>&copy; 2024 Unfinished Business</p>
   </footer>
 
-  <!-- Include the Supabase client via CDN (unchanged) -->
+  <!-- Include the Supabase client and scripts (unchanged) -->
   <script type="module">
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 

@@ -5,248 +5,509 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Unfinished Business - Home</title>
   <style>
-    /* Reset default margin/padding */
+    /*******************************************
+     * FONTS
+     ********************************************/
+    /* Louise Regular */
+    @font-face {
+      font-family: 'Louise-Regular';
+      src: url('fonts/VTF/otf/Louise-Regular.otf') format('otf'),
+          url('fonts/VTF/ttf/Louise-Regular.ttf') format('ttf'),
+          url('fonts/VTF/webfonts/Louise-Regular.woff') format('woff'),
+          url('fonts/VTF/webfonts/Louise-Regular.woff2') format('woff2');
+      font-style: normal;
+    }
+
+    /* Latitude Regular */
+    @font-face {
+      font-family: 'Latitude-Regular';
+      src: url('fonts/VTF/otf/Latitude-Regular.otf') format('otf'),
+          url('fonts/VTF/ttf/Latitude-Regular.ttf') format('ttf'),
+          url('fonts/VTF/webfonts/Latitude-Regular.woff') format('woff'),
+          url('fonts/VTF/webfonts/Latitude-Regular.woff2') format('woff2');
+      font-style: normal;
+    }
+
+    /* Director Regular */
+    @font-face {
+      font-family: 'Director-Regular';
+      src: url('fonts/VTF/otf/Director-Regular.otf') format('otf'),
+          url('fonts/VTF/ttf/Director-Regular.ttf') format('ttf'),
+          url('fonts/VTF/webfonts/Director-Regular.woff') format('woff'),
+          url('fonts/VTF/webfonts/Director-Regular.woff2') format('woff2');
+      font-style: normal;
+    }
+
+    /*******************************************
+     * GLOBAL RESET & BASE STYLES
+     ********************************************/
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
-
-    /* Body Setup */
+    html, body {
+      overflow-x: hidden;      /* Allow no horizontal scroll */
+      touch-action: manipulation;
+      min-height: 100vh;
+      background-color: #121212;
+    }
     body {
-      background-color: rgb(237, 237, 237);
       font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
     }
 
-
-header {
-    height: 15vh;
-}
-
-    /* Title Section */
-   header  h1 {
-      height: 10vh;
-      font-weight: 500;
-      line-height: 10vh; /* Ensures text is vertically centered */
-      font-size: 10vh;   /* Requested text size */
-      color: black;
-      margin: 0;         /* Remove default margin */
-      font-family: sans-serif;
+    /*******************************************
+     * HEADER
+     ********************************************/
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 2vw;
+      border-bottom: 2px solid #ededed;
     }
-
-    /* Link styling */
+    header h1 {
+      font-size: 6rem;
+      padding-top: 1vw;
+      font-family: "Latitude-Regular";
+      color: #e6eeff;
+      user-select: none;
+    }
     header a {
-      color: black;
-      position: absolute;
       text-decoration: none;
-      font-size: 1rem;
-      padding: 0.8rem;
-      transition: background-color 0.3s;
-    }
-
-    a:hover {
-      background-color: rgba(255,255,255,0.3);
-    }
-
-    .project-gallery {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); /* Flexible columns */
-  gap: 40px; /* Add spacing between items */
-  margin: 40px; /* Add space around the grid */
-  padding: 0;
-  width: 95%; /* Full-width of the container */
-}
-.project {
-  position: relative; /* Ensure child elements are constrained to this parent */
-  aspect-ratio: 1 / 1; /* Keeps projects square */
-  width: 100%; /* Grid will handle width */
-  display: flex;
-  background-color: #cdff83;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  transition: background-color 0.5s, color 0.5s;
-  padding: 40px;
-}
-
-.has-image::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%; /* Match the parent's dimensions */
-  height: 100%;
-  opacity: 0;
-  z-index: 1; /* Ensures it sits below text but above the background */
-  transition: opacity 0.5s ease-in-out;
-}
-
-.has-image:hover::before {
-  opacity: 1; /* Fade-in effect on hover */
-}
-
-.has-image .project-info {
-  visibility: hidden;
-  opacity: 0;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%; /* Match parent */
-  height: 100%; /* Match parent */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background-color: rgba(95, 197, 223, 0.8); /* Overlay color */
-  color: black;
-  text-align: center;
-  padding: 20px;
-  z-index: 2; /* Ensure it appears above the pseudo-element */
-  transition: opacity 0.5s ease-in-out;
-}
-
-.has-image:hover .project-info {
-  visibility: visible;
-  opacity: 1; /* Fade-in effect */
-}
-
-    @keyframes fadeInBg {
-      to { opacity: 1; }
-    }
-
-    .has-image:hover .project-info {
-      visibility: visible;
-      opacity: 1;
-      background-color: rgba(95, 197, 223, 1);
-    }
-
-    /* Projects Without Images */
-    .no-image {
-      /* We already have a solid background color set in .project
-         so we can keep that or choose another color. */
+      padding: 0.8rem 1.2rem;
+      background: #e6eeff;
       color: black;
+      transition: background-color 0.3s ease;
     }
-    .no-image:hover {
-      background-color: rgb(70, 150, 180); /* Darker shade on hover */
+    header a:hover {
+      background: #555;
+      color: #e6eeff;
     }
 
-    /* Title & Description Styling (for no-image or once hovered) */
+    /*******************************************
+     * PROJECT GALLERY WRAPPER
+     ********************************************/
+    /*
+      We'll treat #projectList as our "container" for all draggables.
+      We'll set it to position: relative so that our absolute-positioned
+      project cards can be placed inside at random coordinates.
+    */
+    #projectList {
+      position: relative;  /* Important for absolutely-positioned children */
+      width: 100%;
+      height: 100vh;       /* Make it tall enough to show everything (adjust as needed) */
+      overflow: hidden;    /* Hide overflow so draggables don't bleed out */
+    }
+
+    /* The grid approach from the original is replaced by absolute positioning. 
+       If you *still* want a default grid fallback (e.g. when JS fails), 
+       keep the old display: grid lines commented out or remove them. 
+    */
+    /* 
+    .project-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+      padding: 4rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    */
+
+    /*******************************************
+     * PROJECT CARD BASE STYLE
+     ********************************************/
+    .project {
+      position: absolute;    /* We'll position it absolutely within #projectList */
+      cursor: grab;          /* Show "grab" cursor to indicate draggability */
+      user-select: none;     /* Prevent text selection while dragging */
+      width: 300px;          /* Fixed width example; adjust as desired */
+      min-height: 200px;     /* Just an example min-height */
+      overflow: hidden;
+      border: 1px solid #e6eeff;
+      padding: 2rem;         /* Adjust as needed */
+      background-color: #202020; 
+      transition: transform 0.3s ease, background-color 0.3s ease;
+      box-sizing: border-box;
+    }
+    .project:active {
+      cursor: grabbing;
+    }
+
+    /* Hover scaling effect (you can keep or remove) */
+    .project:hover {
+      transform: scale(1.02);
+    }
+
+    /* Info inside each project */
+    .project-info {
+      position: relative;
+      z-index: 2;
+      color: #333; 
+      pointer-events: none;
+      transition: color 0.3s ease;
+    }
     .title {
       font-size: 1.2rem;
       font-weight: bold;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.9rem;
+      color: #e6eeff;
     }
     .description {
       font-size: 1rem;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.9rem;
+      color: #e6eeff;
     }
     .tags {
       font-size: 0.9rem;
       font-style: italic;
-      color: #333;
+      color: #e6eeff;
     }
 
+    /*******************************************
+     * IMAGE OVERLAY
+     ********************************************/
+    .has-image .image-overlay {
+      position: absolute;
+      top: 0; 
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      opacity: 0;
+      transition: opacity 0.4s ease-in-out;
+      z-index: 1;
+    }
+    .has-image:hover .image-overlay {
+      opacity: 1;
+    }
+    .has-image:hover .project-info {
+      opacity: 0;
+    }
+
+    /*******************************************
+     * VISUAL FEEDBACK CLASSES (FROM WEBSITE 1)
+     ********************************************/
+    .dragging {
+      transform: scale(1.1) rotate(1deg);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+      cursor: grabbing;
+    }
+    .dropped {
+      animation: bounce 2s ease;
+    }
+    @keyframes bounce {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-2px); }
+      100% { transform: translateY(0); }
+    }
+
+    /*******************************************
+     * MEDIA QUERIES
+     ********************************************/
+    @media (max-width: 600px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      header h1 {
+        font-size: 2.2rem;
+      }
+      header a {
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+      }
+      .project {
+        width: 200px;  /* smaller for mobile, for instance */
+      }
+    }
   </style>
 </head>
-<body> 
-    <header>  
+<body>
+  <!-- ----------- HEADER ----------- -->
+  <header>
     <h1>Unfinished Business</h1>
-  <a href="upload.html">Upload</a>
-</header>
+    <a href="upload.html">Upload</a>
+  </header>
 
+  <!-- 
+    ----------- PROJECT LIST -----------
+    We will treat this as our "interactive container" 
+    to hold absolutely-positioned .project elements.
+  -->
+  <div id="projectList">Loading...</div>
 
-
-
-
-
-  <div id="projectList" class="project-gallery">Loading...</div>
-
-  <!-- Include the Supabase client via CDN -->
+  <!-- ----------- Supabase & JS Logic ----------- -->
   <script type="module">
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-    // Replace with your actual Supabase details:
+    // Replace with your actual Supabase details
     const SUPABASE_URL = "https://dxvznqxwdbrcyyoadbgb.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR4dnpucXh3ZGJyY3l5b2FkYmdiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQ5NjUzMzIsImV4cCI6MjA1MDU0MTMzMn0.FbSmgJ5KOGaSIY4150gOIbiYWQ86fbtZQk-fP50RkZk";
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+    // We'll store final positions and z-indices of each .project so that
+    // re-renders or re-initialization won't re-randomize. 
+    // (If you want them to re-randomize on page refresh, you can skip storing.)
+    let savedPositions = [];  
+    let isDragging = false;
+    let activeElement = null;
+    let offsetX = 0, offsetY = 0;
+    let velocityX = 0, velocityY = 0;
+    const friction = 0.95;
+    // Keep track of the highest z-index
+    let zIndexCounter = 1000;
+
+    // Function to fetch and render the projects
     async function fetchProjects() {
       try {
         const { data: projects, error } = await supabase
           .from("projects")
-          .select("id, title, description, tags, image_data") 
+          .select("id, title, description, tags, image_data")
           .order("id", { ascending: false });
 
-        if (error) {
-          throw error;
-        }
+        if (error) throw error;
 
         const projectListEl = document.getElementById("projectList");
-        
-        // If no rows returned, show a friendly message
+
+        // If no projects, show a message
         if (!projects || projects.length === 0) {
-          projectListEl.innerHTML = "<p style='color:white; padding:20px;'>No projects uploaded yet.</p>";
+          projectListEl.innerHTML = "<p style='padding:20px;'>No projects uploaded yet.</p>";
           return;
         }
 
-        
-        const colors = ["#cdff83", "#83ffc4", "#83d4ff", "#ffb383", "#ff83b3"]; // Define your 5 colors
-
-const html = projects
-  .map((project, index) => {
-    const backgroundColor = colors[index % colors.length]; // Cyclically pick a color
-
-    if (project.image_data) {
-      // has-image project
-      return `
-        <div 
-          class="project has-image"
-          style="background-image: url('${project.image_data}');"
-        >
-          <div class="project-overlay" style="background-color: ${backgroundColor};"></div>
-          <div class="project-info">
-            <h2 class="title">${project.title}</h2>
-            <p class="description">${project.description}</p>
-            ${
-              project.tags && project.tags.length > 0
-                ? `<p class="tags"><strong>Tags:</strong> ${project.tags.join(", ")}</p>`
-                : ""
+        // Build up HTML
+        const html = projects
+          .map((project, index) => {
+            // If there is image_data, use the "has-image" class & overlay
+            if (project.image_data) {
+              return `
+                <div class="project has-image" data-index="${index}">
+                  <div
+                    class="image-overlay"
+                    style="background-image: url('${escapeURL(project.image_data)}');"
+                  ></div>
+                  <div class="project-info">
+                    <h2 class="title">${escapeHTML(project.title)}</h2>
+                    <p class="description">${escapeHTML(project.description)}</p>
+                    ${
+                      project.tags && project.tags.length
+                        ? `<p class="tags"><strong>Tags:</strong> ${project.tags.map(escapeHTML).join(", ")}</p>`
+                        : ""
+                    }
+                  </div>
+                </div>
+              `;
+            } else {
+              return `
+                <div class="project no-image" data-index="${index}">
+                  <div class="project-info">
+                    <h2 class="title">${escapeHTML(project.title)}</h2>
+                    <p class="description">${escapeHTML(project.description)}</p>
+                    ${
+                      project.tags && project.tags.length
+                        ? `<p class="tags"><strong>Tags:</strong> ${project.tags.map(escapeHTML).join(", ")}</p>`
+                        : ""
+                    }
+                  </div>
+                </div>
+              `;
             }
-          </div>
-        </div>
-      `;
-    } else {
-      // no-image project
-      return `
-        <div 
-          class="project no-image" 
-          style="background-color: ${backgroundColor};"
-        >
-          <div>
-            <h2 class="title">${project.title}</h2>
-            <p class="description">${project.description}</p>
-            ${
-              project.tags && project.tags.length > 0
-                ? `<p class="tags"><strong>Tags:</strong> ${project.tags.join(", ")}</p>`
-                : ""
-            }
-          </div>
-        </div>
-      `;
-    }
-  })
-  .join("");
-
+          })
+          .join("");
 
         projectListEl.innerHTML = html;
+
+        // Once rendered, turn them into draggables with random positions
+        setupDraggables();
       } catch (err) {
         console.error("Error fetching projects:", err);
-        document.getElementById("projectList").innerHTML = "<p style='color:white; padding:20px;'>Error loading projects.</p>";
+        document.getElementById("projectList").innerHTML = "<p style='padding:20px;'>Error loading projects.</p>";
       }
     }
 
-    // Fetch the projects on page load
+    /********************************************
+     * Setup Draggable Logic
+     ********************************************/
+    function setupDraggables() {
+      const container = document.getElementById("projectList");
+      const projects = container.querySelectorAll(".project");
+
+      // If we have saved positions that match the # of projects, re-apply them
+      if (savedPositions.length === projects.length) {
+        projects.forEach((proj, i) => {
+          const { left, top, zIndex } = savedPositions[i];
+          proj.style.left = left + "px";
+          proj.style.top = top + "px";
+          proj.style.zIndex = zIndex;
+        });
+      } else {
+        // Otherwise, randomize positions once, then store them
+        savedPositions = [];
+        const containerRect = container.getBoundingClientRect();
+
+        projects.forEach((proj, i) => {
+          const projWidth = 300;   // matches the .project width
+          const projHeight = 200;  // a rough guess; you could get actual offsetHeight if images load
+          const maxX = containerRect.width - projWidth;
+          const maxY = containerRect.height - projHeight;
+
+          let x = Math.floor(Math.random() * maxX);
+          let y = Math.floor(Math.random() * maxY);
+
+          proj.style.left = x + "px";
+          proj.style.top = y + "px";
+          proj.style.zIndex = 1000;
+
+          // Save
+          savedPositions.push({ left: x, top: y, zIndex: 1000 });
+        });
+      }
+    }
+
+    /********************************************
+     * DRAG / DROP HANDLERS
+     ********************************************/
+    function startDrag(e) {
+      const target = e.target.closest(".project");
+      if (!target) return;
+
+      isDragging = true;
+      activeElement = target;
+
+      // Get click/touch position
+      const containerRect = document.getElementById("projectList").getBoundingClientRect();
+      const rect = activeElement.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+      offsetX = clientX - rect.left;
+      offsetY = clientY - rect.top;
+
+      zIndexCounter++;
+      activeElement.style.zIndex = zIndexCounter;
+      activeElement.classList.add("dragging");
+      e.preventDefault();
+    }
+
+    function onMove(e) {
+      if (!isDragging || !activeElement) return;
+
+      const container = document.getElementById("projectList");
+      const containerRect = container.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+      // Calculate new position
+      const newX = clientX - containerRect.left - offsetX;
+      const newY = clientY - containerRect.top - offsetY;
+
+      // Velocity
+      velocityX = newX - parseFloat(activeElement.style.left || 0);
+      velocityY = newY - parseFloat(activeElement.style.top || 0);
+
+      // Move
+      activeElement.style.left = newX + "px";
+      activeElement.style.top = newY + "px";
+    }
+
+    function endDrag() {
+      if (!isDragging || !activeElement) return;
+
+      isDragging = false;
+      activeElement.classList.remove("dragging");
+      activeElement.classList.add("dropped");
+      activeElement.addEventListener("animationend", function handleAnimationEnd() {
+        activeElement.classList.remove("dropped");
+        activeElement.removeEventListener("animationend", handleAnimationEnd);
+      });
+
+      // We also want to save the final position
+      const container = document.getElementById("projectList");
+      const projects = Array.from(container.querySelectorAll(".project"));
+      const index = projects.indexOf(activeElement);
+      if (index > -1) {
+        savedPositions[index].left = parseFloat(activeElement.style.left);
+        savedPositions[index].top = parseFloat(activeElement.style.top);
+        savedPositions[index].zIndex = parseInt(activeElement.style.zIndex);
+      }
+
+      // Apply momentum
+      requestAnimationFrame(applyMomentum);
+    }
+
+    function applyMomentum() {
+      if (isDragging || !activeElement) return; // stop if user is dragging again
+
+      const container = document.getElementById("projectList");
+      const containerRect = container.getBoundingClientRect();
+
+      let newX = parseFloat(activeElement.style.left || 0) + velocityX;
+      let newY = parseFloat(activeElement.style.top || 0) + velocityY;
+
+      velocityX *= friction;
+      velocityY *= friction;
+
+      // boundaries
+      const projWidth = 300;   // same assumption as above
+      const projHeight = 200;
+      newX = Math.max(0, Math.min(containerRect.width - projWidth, newX));
+      newY = Math.max(0, Math.min(containerRect.height - projHeight, newY));
+
+      activeElement.style.left = newX + "px";
+      activeElement.style.top = newY + "px";
+
+      // update saved position
+      const projects = Array.from(container.querySelectorAll(".project"));
+      const index = projects.indexOf(activeElement);
+      if (index > -1) {
+        savedPositions[index].left = newX;
+        savedPositions[index].top = newY;
+      }
+
+      // keep moving if velocity is still significant
+      if (Math.abs(velocityX) > 0.5 || Math.abs(velocityY) > 0.5) {
+        requestAnimationFrame(applyMomentum);
+      }
+    }
+
+    // UTILITY: Escape HTML to prevent XSS
+    function escapeHTML(str) {
+      if (!str) return "";
+      return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    // UTILITY: Escape URLs
+    function escapeURL(url) {
+      if (!url) return "";
+      return url.replace(/"/g, "%22").replace(/'/g, "%27");
+    }
+
+    /********************************************
+     * EVENT LISTENERS
+     ********************************************/
+    // Mouse
+    document.addEventListener("mousedown", startDrag, false);
+    document.addEventListener("mousemove", onMove, false);
+    document.addEventListener("mouseup", endDrag, false);
+
+    // Touch
+    document.addEventListener("touchstart", startDrag, { passive: false });
+    document.addEventListener("touchmove", onMove, { passive: false });
+    document.addEventListener("touchend", endDrag, false);
+
+    // On page load, fetch projects
     fetchProjects();
   </script>
 </body>
