@@ -56,6 +56,7 @@
       font-family: sans-serif;
       display: flex;
       flex-direction: column;
+      padding: 3vw;
     }
 
     /*******************************************
@@ -65,12 +66,12 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 2vw;
-      border-bottom: 2px solid #ededed;
+      border: 1px solid #ededed;
     }
     header h1 {
       font-size: 6rem;
       font-weight: 300;
+      padding: 2vw;
       color: #e6eeff;
       user-select: none;
       /* No changes to existing styles */
@@ -79,17 +80,26 @@
     }
     header a {
       text-decoration: none;
-      padding: 0.8rem 1.2rem;
-      background: #e6eeff;
-      color: black;
+      padding: 4.5vw 2vw 4.5vw 2vw;
+      margin: 3vw;
+      background: #121212;
+      color: #e6eeff;
+      border: 1px solid white;
       transition: background-color 0.3s ease;
-      border-radius: 5px; /* Optional: smoother button edges */
       font-size: 1rem;
+      font-weight: 200;
       font-weight: bold;
+      position: absolute;
+      right: 0;
+      top: 0;
+      height: 10.5vw;
+      width: 10.5vw;
+      text-align: center;
     }
     header a:hover {
-      background: #555;
-      color: #e6eeff;
+      background: #e6eeff;
+      color: black;
+      border: 1px solid white;
     }
 
     /* New Styles for Animation */
@@ -103,6 +113,17 @@
       opacity: 1;
     }
 
+
+
+    #about {
+      height: fit-content;
+      border: 1px solid #e6eeff;
+      color: #e6eeff;
+      padding: 2vw;
+      line-height: 2.2rem;
+      font-size: 1.7rem;
+      font-weight: 300;
+    }
     /*******************************************
      * PROJECT GALLERY WRAPPER
      ********************************************/
@@ -115,7 +136,10 @@
       position: relative;  /* Important for absolutely-positioned children */
       width: 100%;
       height: 150vh;       /* Make it tall enough to show everything (adjust as needed) */
-      overflow: hidden;    /* Hide overflow so draggables don't bleed out */
+      overflow: hidden;   /* Hide overflow so draggables don't bleed out */
+      border-left: 1px solid white; 
+      border-right: 1px solid white; 
+      border-bottom: 1px solid white; 
     }
 
     /* The grid approach from the original is replaced by absolute positioning. 
@@ -145,10 +169,10 @@
       overflow: hidden;
       border: 1px solid #e6eeff;
       padding: 2rem;         /* Adjust as needed */
-      background-color: #202020; 
+      background-color: #e6eeff;
+      color: #121212;
       transition: transform 0.3s ease, background-color 0.3s ease;
       box-sizing: border-box;
-      border-radius: 10px; /* Optional: smoother card edges */
     }
     .project:active {
       cursor: grabbing;
@@ -172,18 +196,18 @@
       font-size: 1.2rem;
       font-weight: bold;
       margin-bottom: 0.9rem;
-      color: #e6eeff;
+      color: #121212;
     }
     .description {
       font-size: 1rem;
       line-height: 1.4rem;
       margin-bottom: 0.9rem;
-      color: #e6eeff;
+      color: #121212;
     }
     .tags {
       font-size: 0.9rem;
       font-style: italic;
-      color: #e6eeff;
+      color: #121212;
     }
 
     /*******************************************
@@ -243,10 +267,18 @@
       }
       header a {
         font-size: 0.9rem;
-        margin-top: 0.5rem;
+        margin-top: 3vw;
+        height: 11.3vw;
+        padding: 4.1vw 4vw 1.3vw 4vw;
+        width:fit-content;
       }
       .project {
-        width: 200px;  /* smaller for mobile, for instance */
+        width: 400px;  /* smaller for mobile, for instance */
+      }
+      #about {
+        padding: 20px;
+        font-size: 1.3rem;
+        line-height: 2rem;
       }
     }
   </style>
@@ -277,10 +309,18 @@
       <span class="letter hidden">s</span>
       <span class="letter hidden">s</span>
       <span class="letter hidden">.</span>
+      <span class="letter hidden">.</span>
+      <span class="letter hidden">.</span>
     </h1>
-    <a href="upload.html">Upload</a>
+    <a href="upload.html">Submit</a>
   </header>
-
+<div id="about">
+  <p>
+    Unfinished business is a home for half baked ideas. Submit a concept that isnt quite finished, 
+    upload a painting that isnt quite right, spitball a lyric that might sound stupid. This is not the place for polish.
+    This is a space that explores the journey, and not the destination.
+  </p>
+</div>
   <!-- 
     ----------- PROJECT LIST -----------
     We will treat this as our "interactive container" 
@@ -381,41 +421,38 @@
     /********************************************
      * Setup Draggable Logic
      ********************************************/
-    function setupDraggables() {
-      const container = document.getElementById("projectList");
-      const projects = container.querySelectorAll(".project");
+     function setupDraggables() {
+  const container = document.getElementById("projectList");
+  const projects = container.querySelectorAll(".project");
+  const containerRect = container.getBoundingClientRect();
 
-      // If we have saved positions that match the # of projects, re-apply them
-      if (savedPositions.length === projects.length) {
-        projects.forEach((proj, i) => {
-          const { left, top, zIndex } = savedPositions[i];
-          proj.style.left = left + "px";
-          proj.style.top = top + "px";
-          proj.style.zIndex = zIndex;
-        });
-      } else {
-        // Otherwise, randomize positions once, then store them
-        savedPositions = [];
-        const containerRect = container.getBoundingClientRect();
+  if (savedPositions.length === projects.length) {
+    projects.forEach((proj, i) => {
+      const { left, top, zIndex } = savedPositions[i];
+      proj.style.left = left + "px";
+      proj.style.top = top + "px";
+      proj.style.zIndex = zIndex;
+    });
+  } else {
+    savedPositions = [];
+    projects.forEach((proj) => {
+      const projWidth = proj.offsetWidth;
+      const projHeight = proj.offsetHeight;
+      const maxX = containerRect.width - projWidth;
+      const maxY = containerRect.height - projHeight;
 
-        projects.forEach((proj, i) => {
-          const projWidth = 300;   // matches the .project width
-          const projHeight = 200;  // a rough guess; you could get actual offsetHeight if images load
-          const maxX = containerRect.width - projWidth;
-          const maxY = containerRect.height - projHeight;
+      let x = Math.random() * maxX;
+      let y = Math.random() * maxY;
 
-          let x = Math.floor(Math.random() * maxX);
-          let y = Math.floor(Math.random() * maxY);
+      proj.style.left = x + "px";
+      proj.style.top = y + "px";
+      proj.style.zIndex = zIndexCounter;
 
-          proj.style.left = x + "px";
-          proj.style.top = y + "px";
-          proj.style.zIndex = 1000;
+      savedPositions.push({ left: x, top: y, zIndex: zIndexCounter });
+    });
+  }
+}
 
-          // Save
-          savedPositions.push({ left: x, top: y, zIndex: 1000 });
-        });
-      }
-    }
 
     /********************************************
      * DRAG / DROP HANDLERS
