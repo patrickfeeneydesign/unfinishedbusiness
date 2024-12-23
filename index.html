@@ -4,11 +4,161 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Progress Report - Home</title>
+  <style>
+    /* Reset default margin/padding */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* Body Setup */
+    body {
+      background-color: rgb(237, 237, 237);
+      font-family: sans-serif;
+    }
+
+
+header {
+    height: 15vh;
+}
+
+    /* Title Section */
+   header  h1 {
+      height: 10vh;
+      font-weight: 500;
+      line-height: 10vh; /* Ensures text is vertically centered */
+      font-size: 10vh;   /* Requested text size */
+      color: black;
+      margin: 0;         /* Remove default margin */
+      font-family: sans-serif;
+    }
+
+    /* Link styling */
+    header a {
+      color: black;
+      position: absolute;
+      text-decoration: none;
+      font-size: 1rem;
+      padding: 0.8rem;
+      transition: background-color 0.3s;
+    }
+
+    a:hover {
+      background-color: rgba(255,255,255,0.3);
+    }
+
+    .project-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); /* Flexible columns */
+  gap: 40px; /* Add spacing between items */
+  margin: 40px; /* Add space around the grid */
+  padding: 0;
+  width: 95%; /* Full-width of the container */
+}
+.project {
+  position: relative; /* Ensure child elements are constrained to this parent */
+  aspect-ratio: 1 / 1; /* Keeps projects square */
+  width: 100%; /* Grid will handle width */
+  display: flex;
+  background-color: #cdff83;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transition: background-color 0.5s, color 0.5s;
+}
+
+.has-image::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%; /* Match the parent's dimensions */
+  height: 100%;
+  opacity: 0;
+  z-index: 1; /* Ensures it sits below text but above the background */
+  transition: opacity 0.5s ease-in-out;
+}
+
+.has-image:hover::before {
+  opacity: 1; /* Fade-in effect on hover */
+}
+
+.has-image .project-info {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%; /* Match parent */
+  height: 100%; /* Match parent */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(95, 197, 223, 0.8); /* Overlay color */
+  color: black;
+  text-align: center;
+  padding: 20px;
+  z-index: 2; /* Ensure it appears above the pseudo-element */
+  transition: opacity 0.5s ease-in-out;
+}
+
+.has-image:hover .project-info {
+  visibility: visible;
+  opacity: 1; /* Fade-in effect */
+}
+
+    @keyframes fadeInBg {
+      to { opacity: 1; }
+    }
+
+    .has-image:hover .project-info {
+      visibility: visible;
+      opacity: 1;
+      background-color: rgba(95, 197, 223, 1);
+    }
+
+    /* Projects Without Images */
+    .no-image {
+      /* We already have a solid background color set in .project
+         so we can keep that or choose another color. */
+      color: black;
+    }
+    .no-image:hover {
+      background-color: rgb(70, 150, 180); /* Darker shade on hover */
+    }
+
+    /* Title & Description Styling (for no-image or once hovered) */
+    .title {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+    .description {
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+    }
+    .tags {
+      font-size: 0.9rem;
+      font-style: italic;
+      color: #333;
+    }
+
+  </style>
 </head>
-<body>
-  <h1>All Projects</h1>
+<body> 
+    <header>  
+    <h1>Unfinished Business</h1>
   <a href="upload.html">Upload</a>
-  <div id="projectList">Loading...</div>
+</header>
+
+
+
+
+
+
+  <div id="projectList" class="project-gallery">Loading...</div>
 
   <!-- Include the Supabase client via CDN -->
   <script type="module">
@@ -22,9 +172,6 @@
 
     async function fetchProjects() {
       try {
-        // IMPORTANT: Make sure these columns exist in the database: 
-        // id (PK), title (text), description (text),
-        // tags (text[]), and image_data (text).
         const { data: projects, error } = await supabase
           .from("projects")
           .select("id, title, description, tags, image_data") 
@@ -38,41 +185,63 @@
         
         // If no rows returned, show a friendly message
         if (!projects || projects.length === 0) {
-          projectListEl.innerHTML = "<p>No projects uploaded yet.</p>";
+          projectListEl.innerHTML = "<p style='color:white; padding:20px;'>No projects uploaded yet.</p>";
           return;
         }
 
-        // Construct dynamic HTML
-        const html = projects
-          .map((project) => {
-            // If there's Base64 image data, display it
-            let imageTag = "";
-            if (project.image_data) {
-              // Because it's a data URI, we can just use it as the src
-              imageTag = `<img src="${project.image_data}" alt="Project Image" style="max-width: 300px; display: block;" />`;
-            }
+        
+        const colors = ["#cdff83", "#83ffc4", "#83d4ff", "#ffb383", "#ff83b3"]; // Define your 5 colors
 
-            // Handle tags if they exist
-            let tagsOutput = "";
-            if (project.tags && project.tags.length > 0) {
-              tagsOutput = `<p><strong>Tags:</strong> ${project.tags.join(", ")}</p>`;
-            }
+const html = projects
+  .map((project, index) => {
+    const backgroundColor = colors[index % colors.length]; // Cyclically pick a color
 
-            return `
-              <div style="margin-bottom: 1rem; border-bottom: 1px solid #ccc; padding-bottom: 1rem;">
-                <h2>${project.title}</h2>
-                <p>${project.description}</p>
-                ${tagsOutput}
-                ${imageTag}
-              </div>
-            `;
-          })
-          .join("");
+    if (project.image_data) {
+      // has-image project
+      return `
+        <div 
+          class="project has-image"
+          style="background-image: url('${project.image_data}');"
+        >
+          <div class="project-overlay" style="background-color: ${backgroundColor};"></div>
+          <div class="project-info">
+            <h2 class="title">${project.title}</h2>
+            <p class="description">${project.description}</p>
+            ${
+              project.tags && project.tags.length > 0
+                ? `<p class="tags"><strong>Tags:</strong> ${project.tags.join(", ")}</p>`
+                : ""
+            }
+          </div>
+        </div>
+      `;
+    } else {
+      // no-image project
+      return `
+        <div 
+          class="project no-image" 
+          style="background-color: ${backgroundColor};"
+        >
+          <div>
+            <h2 class="title">${project.title}</h2>
+            <p class="description">${project.description}</p>
+            ${
+              project.tags && project.tags.length > 0
+                ? `<p class="tags"><strong>Tags:</strong> ${project.tags.join(", ")}</p>`
+                : ""
+            }
+          </div>
+        </div>
+      `;
+    }
+  })
+  .join("");
+
 
         projectListEl.innerHTML = html;
       } catch (err) {
         console.error("Error fetching projects:", err);
-        document.getElementById("projectList").innerHTML = "<p>Error loading projects.</p>";
+        document.getElementById("projectList").innerHTML = "<p style='color:white; padding:20px;'>Error loading projects.</p>";
       }
     }
 
