@@ -11,30 +11,30 @@
     /* Louise Regular */
     @font-face {
       font-family: 'Louise-Regular';
-      src: url('fonts/VTF/otf/Louise-Regular.otf') format('otf'),
-          url('fonts/VTF/ttf/Louise-Regular.ttf') format('ttf'),
-          url('fonts/VTF/webfonts/Louise-Regular.woff') format('woff'),
-          url('fonts/VTF/webfonts/Louise-Regular.woff2') format('woff2');
+      src: url('fonts/VTF/otf/Louise-Regular.otf') format('opentype'),
+           url('fonts/VTF/ttf/Louise-Regular.ttf') format('truetype'),
+           url('fonts/VTF/webfonts/Louise-Regular.woff') format('woff'),
+           url('fonts/VTF/webfonts/Louise-Regular.woff2') format('woff2');
       font-style: normal;
     }
 
     /* Latitude Regular */
     @font-face {
       font-family: 'Latitude-Regular';
-      src: url('fonts/VTF/otf/Latitude-Regular.otf') format('otf'),
-          url('fonts/VTF/ttf/Latitude-Regular.ttf') format('ttf'),
-          url('fonts/VTF/webfonts/Latitude-Regular.woff') format('woff'),
-          url('fonts/VTF/webfonts/Latitude-Regular.woff2') format('woff2');
+      src: url('fonts/VTF/otf/Latitude-Regular.otf') format('opentype'),
+           url('fonts/VTF/ttf/Latitude-Regular.ttf') format('truetype'),
+           url('fonts/VTF/webfonts/Latitude-Regular.woff') format('woff'),
+           url('fonts/VTF/webfonts/Latitude-Regular.woff2') format('woff2');
       font-style: normal;
     }
 
     /* Director Regular */
     @font-face {
       font-family: 'Director-Regular';
-      src: url('fonts/VTF/otf/Director-Regular.otf') format('otf'),
-          url('fonts/VTF/ttf/Director-Regular.ttf') format('ttf'),
-          url('fonts/VTF/webfonts/Director-Regular.woff') format('woff'),
-          url('fonts/VTF/webfonts/Director-Regular.woff2') format('woff2');
+      src: url('fonts/VTF/otf/Director-Regular.otf') format('opentype'),
+           url('fonts/VTF/ttf/Director-Regular.ttf') format('truetype'),
+           url('fonts/VTF/webfonts/Director-Regular.woff') format('woff'),
+           url('fonts/VTF/webfonts/Director-Regular.woff2') format('woff2');
       font-style: normal;
     }
 
@@ -47,7 +47,7 @@
       box-sizing: border-box;
     }
     html, body {
-      overflow-x: hidden;      /* Allow no horizontal scroll */
+      overflow-x: hidden;      /* Prevent horizontal scroll */
       touch-action: manipulation;
       min-height: 100vh;
       background-color: #121212;
@@ -70,10 +70,12 @@
     }
     header h1 {
       font-size: 6rem;
-      padding-top: 1vw;
-      font-family: "Latitude-Regular";
+      font-weight: 300;
       color: #e6eeff;
       user-select: none;
+      /* No changes to existing styles */
+      display: flex;
+      flex-wrap: wrap; /* Allow wrapping if needed */
     }
     header a {
       text-decoration: none;
@@ -81,10 +83,24 @@
       background: #e6eeff;
       color: black;
       transition: background-color 0.3s ease;
+      border-radius: 5px; /* Optional: smoother button edges */
+      font-size: 1rem;
+      font-weight: bold;
     }
     header a:hover {
       background: #555;
       color: #e6eeff;
+    }
+
+    /* New Styles for Animation */
+    .letter {
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      display: inline-block;
+    }
+
+    .visible {
+      opacity: 1;
     }
 
     /*******************************************
@@ -98,7 +114,7 @@
     #projectList {
       position: relative;  /* Important for absolutely-positioned children */
       width: 100%;
-      height: 100vh;       /* Make it tall enough to show everything (adjust as needed) */
+      height: 150vh;       /* Make it tall enough to show everything (adjust as needed) */
       overflow: hidden;    /* Hide overflow so draggables don't bleed out */
     }
 
@@ -132,6 +148,7 @@
       background-color: #202020; 
       transition: transform 0.3s ease, background-color 0.3s ease;
       box-sizing: border-box;
+      border-radius: 10px; /* Optional: smoother card edges */
     }
     .project:active {
       cursor: grabbing;
@@ -148,7 +165,8 @@
       z-index: 2;
       color: #333; 
       pointer-events: none;
-      transition: color 0.3s ease;
+      transition: opacity 0.4s ease-in-out, color 0.3s ease;
+      opacity: 1; /* Default opacity */
     }
     .title {
       font-size: 1.2rem;
@@ -158,6 +176,7 @@
     }
     .description {
       font-size: 1rem;
+      line-height: 1.4rem;
       margin-bottom: 0.9rem;
       color: #e6eeff;
     }
@@ -179,15 +198,19 @@
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
-      opacity: 0;
+      opacity: 1; /* Image visible on load */
       transition: opacity 0.4s ease-in-out;
       z-index: 1;
     }
     .has-image:hover .image-overlay {
-      opacity: 1;
+      opacity: 0; /* Hide image on hover */
+    }
+    .has-image .project-info {
+      opacity: 0; /* Hide content on load */
+      transition: opacity 0.4s ease-in-out;
     }
     .has-image:hover .project-info {
-      opacity: 0;
+      opacity: 1; /* Show content on hover */
     }
 
     /*******************************************
@@ -231,7 +254,30 @@
 <body>
   <!-- ----------- HEADER ----------- -->
   <header>
-    <h1>Unfinished Business</h1>
+    <h1 id="animated-title">
+      <!-- Each letter wrapped in a span with class 'letter' -->
+      <!-- Including spaces as non-breaking spaces for proper spacing -->
+      <span class="letter hidden">U</span>
+      <span class="letter hidden">n</span>
+      <span class="letter hidden">f</span>
+      <span class="letter hidden">i</span>
+      <span class="letter hidden">n</span>
+      <span class="letter hidden">i</span>
+      <span class="letter hidden">s</span>
+      <span class="letter hidden">h</span>
+      <span class="letter hidden">e</span>
+      <span class="letter hidden">d</span>
+      <span class="letter hidden">&nbsp;</span> <!-- Space between words -->
+      <span class="letter hidden">B</span>
+      <span class="letter hidden">u</span>
+      <span class="letter hidden">s</span>
+      <span class="letter hidden">i</span>
+      <span class="letter hidden">n</span>
+      <span class="letter hidden">e</span>
+      <span class="letter hidden">s</span>
+      <span class="letter hidden">s</span>
+      <span class="letter hidden">.</span>
+    </h1>
     <a href="upload.html">Upload</a>
   </header>
 
@@ -278,7 +324,7 @@
 
         // If no projects, show a message
         if (!projects || projects.length === 0) {
-          projectListEl.innerHTML = "<p style='padding:20px;'>No projects uploaded yet.</p>";
+          projectListEl.innerHTML = "<p style='padding:20px; color: #e6eeff;'>No projects uploaded yet.</p>";
           return;
         }
 
@@ -328,7 +374,7 @@
         setupDraggables();
       } catch (err) {
         console.error("Error fetching projects:", err);
-        document.getElementById("projectList").innerHTML = "<p style='padding:20px;'>Error loading projects.</p>";
+        document.getElementById("projectList").innerHTML = "<p style='padding:20px; color: #e6eeff;'>Error loading projects.</p>";
       }
     }
 
@@ -405,8 +451,14 @@
       const clientY = e.touches ? e.touches[0].clientY : e.clientY;
 
       // Calculate new position
-      const newX = clientX - containerRect.left - offsetX;
-      const newY = clientY - containerRect.top - offsetY;
+      let newX = clientX - containerRect.left - offsetX;
+      let newY = clientY - containerRect.top - offsetY;
+
+      // Boundary checks
+      const projWidth = activeElement.offsetWidth;
+      const projHeight = activeElement.offsetHeight;
+      newX = Math.max(0, Math.min(containerRect.width - projWidth, newX));
+      newY = Math.max(0, Math.min(containerRect.height - projHeight, newY));
 
       // Velocity
       velocityX = newX - parseFloat(activeElement.style.left || 0);
@@ -455,8 +507,8 @@
       velocityY *= friction;
 
       // boundaries
-      const projWidth = 300;   // same assumption as above
-      const projHeight = 200;
+      const projWidth = activeElement.offsetWidth;
+      const projHeight = activeElement.offsetHeight;
       newX = Math.max(0, Math.min(containerRect.width - projWidth, newX));
       newY = Math.max(0, Math.min(containerRect.height - projHeight, newY));
 
@@ -506,6 +558,22 @@
     document.addEventListener("touchstart", startDrag, { passive: false });
     document.addEventListener("touchmove", onMove, { passive: false });
     document.addEventListener("touchend", endDrag, false);
+
+    /********************************************
+     * Title Animation Logic
+     ********************************************/
+    document.addEventListener("DOMContentLoaded", () => {
+      const title = document.getElementById("animated-title");
+      const letters = title.querySelectorAll(".letter");
+      
+      letters.forEach((letter, index) => {
+        // Calculate a random delay between 50ms to 150ms for each letter
+        const delay = 500 + index * 100 + Math.random() * 100;
+        setTimeout(() => {
+          letter.classList.add("visible");
+        }, delay);
+      });
+    });
 
     // On page load, fetch projects
     fetchProjects();
