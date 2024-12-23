@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Progress Report - Home</title>
+</head>
+<body>
+  <h1>All Projects</h1>
+  <div id="projectList">Loading...</div>
+
+  <!-- Include the Supabase client via CDN -->
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+    // Replace these placeholders with your actual values:
+    const SUPABASE_URL = "https://dxvznqxwdbrcyyoadbgb.supabase.co";
+    const SUPABASE_ANON_KEY = "YeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR4dnpucXh3ZGJyY3l5b2FkYmdiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQ5NjUzMzIsImV4cCI6MjA1MDU0MTMzMn0.FbSmgJ5KOGaSIY4150gOIbiYWQ86fbtZQk-fP50RkZk";
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    async function fetchProjects() {
+      try {
+        const { data: projects, error } = await supabase
+          .from("projects")
+          .select("id, title, description")
+          .order("id", { ascending: false });
+
+        if (error) {
+          throw error;
+        }
+
+        const projectListEl = document.getElementById("projectList");
+        if (!projects || projects.length === 0) {
+          projectListEl.innerHTML = "<p>No projects uploaded yet.</p>";
+          return;
+        }
+
+        // Create a list of projects
+        const html = projects
+          .map((project) => {
+            return `
+              <div style="margin-bottom: 1rem;">
+                <h2>${project.title}</h2>
+                <p>${project.description}</p>
+              </div>
+            `;
+          })
+          .join("");
+
+        projectListEl.innerHTML = html;
+      } catch (err) {
+        console.error("Error fetching projects:", err);
+        document.getElementById("projectList").innerHTML = "<p>Error loading projects.</p>";
+      }
+    }
+
+    // Fetch the projects as soon as the page loads
+    fetchProjects();
+  </script>
+</body>
+</html>

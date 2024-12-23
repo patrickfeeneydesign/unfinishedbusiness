@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Upload - Progress Report</title>
+</head>
+<body>
+  <h1>Upload Your Project</h1>
+  <form id="uploadForm">
+    <div>
+      <label for="title">Project Title</label><br />
+      <input type="text" id="title" name="title" required />
+    </div>
+
+    <div>
+      <label for="description">Description</label><br />
+      <textarea id="description" name="description" rows="4" required></textarea>
+    </div>
+
+    <div>
+      <label for="tags">Tags (comma-separated)</label><br />
+      <input type="text" id="tags" name="tags" placeholder="e.g. art, WIP, concept" />
+    </div>
+
+    <div>
+      <label for="file">File Upload</label><br />
+      <input type="file" id="file" name="file" required />
+    </div>
+
+    <button type="submit">Submit</button>
+  </form>
+
+  <p id="statusMessage"></p>
+
+  <!-- Include the Supabase client via CDN -->
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+    // Replace these placeholders with your actual values:
+    const SUPABASE_URL = "https://dxvznqxwdbrcyyoadbgb.supabase.co";
+    const SUPABASE_ANON_KEY = "YeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR4dnpucXh3ZGJyY3l5b2FkYmdiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQ5NjUzMzIsImV4cCI6MjA1MDU0MTMzMn0.FbSmgJ5KOGaSIY4150gOIbiYWQ86fbtZQk-fP50RkZk";
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const uploadForm = document.getElementById("uploadForm");
+    const statusMessage = document.getElementById("statusMessage");
+
+    uploadForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      statusMessage.textContent = "Uploading...";
+
+      // Gather form data
+      const title = document.getElementById("title").value.trim();
+      const description = document.getElementById("description").value.trim();
+      const tagsInput = document.getElementById("tags").value.trim();
+      const fileInput = document.getElementById("file").files[0];
+
+      if (!fileInput) {
+        statusMessage.textContent = "Please select a file.";
+        return;
+      }
+
+      // Convert tags to array of strings
+      const tags = tagsInput ? tagsInput.split(",").map((tag) => tag.trim()) : [];
+
+      try {
+        // 1. Upload the file to Supabase Storage
+        //    We'll store files in the 'uploads' bucket we created
+        const fileName = `${Date.now()}_${fileInput.name}`;
+        const { data: fileData, error: fileError } = await supabase.storage
+          .from("uploads")
+          .upload(fileName, fileInput);
+
+        if (fileError) {
+          throw fileError;
+        }
+
+        // 2. Get the file path from the upload response
+        const fileUrl = fileData.path; // e.g. "some-folder/filename.png"
+
+        // 3. Insert metadata into the 'projects' table
+        //    We'll store 'file_url' as the path to retrieve it later
+        const { data: newRecord, error: dbError } = await supabase
+          .from("projects")
+          .insert([
+            {
+              title: title,
+              description: description,
+              tags: tags,         // We'll store tags as a text[] column
+              file_url: fileUrl,  // Path in Supabase Storage
+            },
+          ]);
+
+        if (dbError) {
+          throw dbError;
+        }
+
+        statusMessage.textContent = "Upload successful!";
+        uploadForm.reset();
+      } catch (error) {
+        console.error("Upload error:", error);
+        statusMessage.textContent = "Upload failed. Please try again.";
+      }
+    });
+  </script>
+</body>
+</html>
