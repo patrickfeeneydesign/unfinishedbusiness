@@ -23,7 +23,11 @@
       <input type="text" id="tags" name="tags" placeholder="e.g. art, WIP, concept" />
     </div>
 
-    <!-- Removed the file upload section -->
+    <!-- OPTIONAL file upload section -->
+    <div>
+      <label for="file">Optional Image Upload</label><br />
+      <input type="file" id="file" name="file" accept="image/*" />
+    </div>
 
     <button type="submit">Submit</button>
   </form>
@@ -50,19 +54,55 @@
       const title = document.getElementById("title").value.trim();
       const description = document.getElementById("description").value.trim();
       const tagsInput = document.getElementById("tags").value.trim();
+      const fileInput = document.getElementById("file").files[0]; // optional file
 
       // Convert tags to array of strings
       const tags = tagsInput ? tagsInput.split(",").map((tag) => tag.trim()) : [];
 
+      // Initialize image URL to null
+      let imageUrl = null;
+
+      // If a file is selected, attempt an upload
+      if (fileInput) {
+        try {
+          const uniqueFileName = `${Date.now()}_${fileInput.name}`;
+
+          // Upload the file to your "uploads" bucket (make sure it exists in your Supabase project)
+          const { data: fileData, error: uploadError } = await supabase.storage
+            .from("uploads")
+            .upload(uniqueFileName, fileInput);
+
+          if (uploadError) {
+            throw uploadError;
+          }
+
+          // Retrieve a public URL for the uploaded file
+          const { data: publicUrlData, error: publicUrlError } = supabase.storage
+            .from("uploads")
+            .getPublicUrl(fileData.path);
+
+          if (publicUrlError) {
+            throw publicUrlError;
+          }
+
+          imageUrl = publicUrlData.publicUrl;
+        } catch (err) {
+          console.error("Image upload failed:", err.message);
+          statusMessage.textContent = `Image upload failed: ${err.message}`;
+          return; // Stop form submission if the image fails
+        }
+      }
+
       try {
-        // Insert metadata into the 'projects' table
+        // Insert metadata (and image URL if available) into the 'projects' table
         const { data: newRecord, error: dbError } = await supabase
           .from("projects")
           .insert([
             {
               title: title,
               description: description,
-              tags: tags, // Stored as a text[] column
+              tags: tags,  // Stored as a text[] column
+              image_url: imageUrl, // Will be null if no image was uploaded
             },
           ]);
 
