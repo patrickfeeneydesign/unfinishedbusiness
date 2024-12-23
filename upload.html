@@ -37,8 +37,7 @@
   <script type="module">
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-    // Replace these placeholders with your actual values:
-    const SUPABASE_URL = "hhttps://dxvznqxwdbrcyyoadbgb.supabase.co";
+    const SUPABASE_URL = "https://dxvznqxwdbrcyyoadbgb.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR4dnpucXh3ZGJyY3l5b2FkYmdiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQ5NjUzMzIsImV4cCI6MjA1MDU0MTMzMn0.FbSmgJ5KOGaSIY4150gOIbiYWQ86fbtZQk-fP50RkZk";
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -66,29 +65,38 @@
 
       try {
         // 1. Upload the file to Supabase Storage
-        //    We'll store files in the 'uploads' bucket we created
         const fileName = `${Date.now()}_${fileInput.name}`;
         const { data: fileData, error: fileError } = await supabase.storage
           .from("uploads")
-          .upload(fileName, fileInput);
+          .upload(fileName, fileInput, {
+            cacheControl: "3600",
+            upsert: false,
+          });
 
         if (fileError) {
           throw fileError;
         }
 
-        // 2. Get the file path from the upload response
-        const fileUrl = fileData.path; // e.g. "some-folder/filename.png"
+        // 2. Get the public URL of the uploaded file
+        const { data: publicUrlData, error: urlError } = supabase.storage
+          .from("uploads")
+          .getPublicUrl(fileData.path);
+
+        if (urlError) {
+          throw urlError;
+        }
+
+        const filePublicUrl = publicUrlData.publicUrl;
 
         // 3. Insert metadata into the 'projects' table
-        //    We'll store 'file_url' as the path to retrieve it later
         const { data: newRecord, error: dbError } = await supabase
           .from("projects")
           .insert([
             {
               title: title,
               description: description,
-              tags: tags,         // We'll store tags as a text[] column
-              file_url: fileUrl,  // Path in Supabase Storage
+              tags: tags,         // Stored as a text[] column
+              file_url: filePublicUrl,  // Full public URL
             },
           ]);
 
@@ -100,7 +108,7 @@
         uploadForm.reset();
       } catch (error) {
         console.error("Upload error:", error);
-        statusMessage.textContent = "Upload failed. Please try again.";
+        statusMessage.textContent = `Upload failed: ${error.message}`;
       }
     });
   </script>
